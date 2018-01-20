@@ -1,0 +1,8 @@
+/packages
+/NetTelegramBotApi.v12.suo
+bin
+obj
+*.user
+StyleCop.Cache
+/*.nupkg
+/.vs

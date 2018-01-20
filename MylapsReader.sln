@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2024
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{34445705-C960-4F4A-9A1C-3FEBBFFAE40A}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		GlobalSuppressions.cs = GlobalSuppressions.cs
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MylapsReader", "MylapsReader\MylapsReader.csproj", "{BC7C6422-BD20-4D6E-92AA-5EB2E8901142}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MylapsReader.Tests", "MylapsReader.Tests\MylapsReader.Tests.csproj", "{33AE675A-5FB5-4640-8649-A71B4862B46D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BC7C6422-BD20-4D6E-92AA-5EB2E8901142}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC7C6422-BD20-4D6E-92AA-5EB2E8901142}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC7C6422-BD20-4D6E-92AA-5EB2E8901142}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC7C6422-BD20-4D6E-92AA-5EB2E8901142}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33AE675A-5FB5-4640-8649-A71B4862B46D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33AE675A-5FB5-4640-8649-A71B4862B46D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33AE675A-5FB5-4640-8649-A71B4862B46D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33AE675A-5FB5-4640-8649-A71B4862B46D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {90147712-4145-47B5-9E01-12ED8C9B40FB}
+	EndGlobalSection
+EndGlobal
