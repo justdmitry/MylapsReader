@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MylapsReader", "MylapsReade
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MylapsReader.Tests", "MylapsReader.Tests\MylapsReader.Tests.csproj", "{33AE675A-5FB5-4640-8649-A71B4862B46D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MylapsReader.Demo", "MylapsReader.Demo\MylapsReader.Demo.csproj", "{3A7978E1-7DFB-4029-B042-1B323C21E6F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{33AE675A-5FB5-4640-8649-A71B4862B46D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33AE675A-5FB5-4640-8649-A71B4862B46D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33AE675A-5FB5-4640-8649-A71B4862B46D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A7978E1-7DFB-4029-B042-1B323C21E6F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A7978E1-7DFB-4029-B042-1B323C21E6F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A7978E1-7DFB-4029-B042-1B323C21E6F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A7978E1-7DFB-4029-B042-1B323C21E6F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
