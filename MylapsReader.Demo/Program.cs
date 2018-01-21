@@ -12,8 +12,9 @@
     {
         public static void Main(string[] args)
         {
-            var loggerFactory = new LoggerFactory();
-            loggerFactory.AddConsole(LogLevel.Trace);
+            var loggerFactory = new LoggerFactory()
+                .AddConsole(LogLevel.Trace)
+                .AddFile("log.txt", LogLevel.Trace);
 
             var logger = loggerFactory.CreateLogger(typeof(Program));
 
