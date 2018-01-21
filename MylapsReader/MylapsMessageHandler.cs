@@ -1,16 +1,12 @@
 ﻿namespace MylapsReader
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
 
     public class MylapsMessageHandler
     {
-        //public const char MessageDelimiter = '$';
-
         public const char MessagePartDelimiter = '@';
 
         private readonly ILogger logger;

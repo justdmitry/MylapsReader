@@ -6,15 +6,23 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
 
     public class ReaderListener
     {
+        private readonly ILogger logger;
+
         private IPAddress addressValue = IPAddress.Any;
         private int portValue = 1693;
         private Encoding encodingValue = Encoding.Default;
 
         private TcpListener listener = null;
         private CancellationTokenSource cancellationTokenSource = null;
+
+        public ReaderListener(ILogger<ReaderListener> logger)
+        {
+            this.logger = logger;
+        }
 
         public delegate Task NewMessageHandler(ReaderListener source, NewMessageEventArgs args);
 
@@ -61,6 +69,8 @@
 
         public char MessageDelimiter { get; set; } = '$';
 
+        public bool TrimNewLines { get; set; } = true;
+
         public Encoding Encoding
         {
             get => encodingValue;
@@ -92,9 +102,14 @@
             }
 
             cancellationTokenSource = new CancellationTokenSource();
+
+            logger.LogDebug("Starting on port {1} of {0}...", Address, Port);
             listener = new TcpListener(Address, Port);
             listener.Start();
+            logger.LogDebug("Started OK, local endpoint is {0}.", listener.LocalEndpoint.ToString());
+
             listener.BeginAcceptTcpClient(new AsyncCallback(AcceptTcpClient), new AcceptClientState(listener, cancellationTokenSource.Token));
+            logger.LogDebug("Waiting for client...");
         }
 
         public void Stop()
@@ -112,6 +127,7 @@
 
             listener.Stop();
             listener = null;
+            logger.LogDebug("Stopped OK.");
         }
 
         protected virtual void AcceptTcpClient(IAsyncResult asyncResult)
@@ -121,6 +137,7 @@
             try
             {
                 var client = state.Listener.EndAcceptTcpClient(asyncResult);
+                logger.LogDebug("New client connected: {0}", client.Client.RemoteEndPoint);
 
                 if (!state.Token.IsCancellationRequested)
                 {
@@ -133,6 +150,7 @@
                 }
                 else
                 {
+                    logger.LogDebug("Closing connection from {0} (global cancellation token is set)", client.Client.RemoteEndPoint);
                     client.Close();
                 }
             }
@@ -149,8 +167,14 @@
             try
             {
                 var byteCount = state.Stream.EndRead(asyncResult);
+                logger.LogDebug("Received {0} bytes from {1}", byteCount, state.Client.Client.RemoteEndPoint);
 
-                if (!state.Token.IsCancellationRequested)
+                if (byteCount == 0)
+                {
+                    logger.LogWarning("It seems that client is disconnected. Closing.");
+                    state.Client.Close();
+                }
+                else if (!state.Token.IsCancellationRequested)
                 {
                     ProcessIncomingData(state.Buffer, byteCount, state);
 
@@ -158,6 +182,7 @@
                 }
                 else
                 {
+                    logger.LogDebug("Closing connection from {0} (global cancellation token is set)", state.Client.Client.RemoteEndPoint);
                     state.Client.Close();
                 }
             }
@@ -165,13 +190,20 @@
             {
                 // Nothing
             }
+            catch (Exception ex)
+            {
+                logger.LogError(0, ex, "Processing data failed. Closing client.");
+                state.Client.Close();
+            }
         }
 
         protected virtual void ProcessIncomingData(byte[] buffer, int byteCount, ClientReadState state)
         {
             var chars = new char[1000];
             var charsCount = state.Decoder.GetChars(buffer, 0, byteCount, chars, 0);
-            state.StringBuilder.Append(chars, 0, charsCount);
+            var sb = state.StringBuilder;
+
+            sb.Append(chars, 0, charsCount);
 
             while (true)
             {
@@ -181,9 +213,9 @@
                 }
 
                 var idx = -1;
-                for (var i = 0; i < state.StringBuilder.Length; i++)
+                for (var i = 0; i < sb.Length; i++)
                 {
-                    if (state.StringBuilder[i] == MessageDelimiter)
+                    if (sb[i] == MessageDelimiter)
                     {
                         idx = i;
                         break;
@@ -199,17 +231,46 @@
                 // if not at first position (e.g. command not empty)
                 if (idx > 0)
                 {
-                    var msg = state.StringBuilder.ToString(0, idx);
+                    var msg = sb.ToString(0, idx);
                     OnNewMessage(msg, state);
                 }
 
-                // remove command and command delimiter
-                state.StringBuilder.Remove(0, idx + 1);
+                /*
+                Now should remove processed data from buffer
+                */
+
+                idx++; // command delimiter itself
+
+                if (TrimNewLines)
+                {
+                    while (sb.Length > idx)
+                    {
+                        if (sb[idx] == '\r' || sb[idx] == '\n')
+                        {
+                            idx++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                sb.Remove(0, idx);
+
+                if (logger.IsEnabled(LogLevel.Debug))
+                {
+                    if (sb.Length > 0)
+                    {
+                        logger.LogDebug("Data still in buffer: {0}", sb.ToString());
+                    }
+                }
             }
         }
 
         protected virtual void OnNewMessage(string message, ClientReadState state)
         {
+            logger.LogDebug("OnNewMessage(): {0}", message);
             var args = new NewMessageEventArgs
             {
                 Message = message,
@@ -222,7 +283,9 @@
 
         protected virtual Task SendAsync(string text, ClientReadState state)
         {
-            var bytes = state.Encoding.GetBytes(text + MessageDelimiter);
+            var message = text + MessageDelimiter;
+            logger.LogDebug("SendAsync() + MessageDelimiter: {0}", message);
+            var bytes = state.Encoding.GetBytes(message);
             return state.Stream.WriteAsync(bytes, 0, bytes.Length);
         }
 
